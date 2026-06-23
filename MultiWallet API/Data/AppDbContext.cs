@@ -39,7 +39,6 @@ namespace _context
                 .HasMany(u => u.Transactions)
                 .WithOne(t => t.User)
                 .HasForeignKey(t => t.UserId);
-
         }
     }
 }
