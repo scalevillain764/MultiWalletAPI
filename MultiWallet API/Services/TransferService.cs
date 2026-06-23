@@ -20,42 +20,51 @@ namespace _transfer_service
         {
             if (!Ulid.TryParse(transferCreationDTO.FromWalletId, out var fromWalletId))
                 return Result<TransferResponseDTO>.Error("Неверный № счета отправителя");
-
-            var fromWallet = await _context.Wallets
-                .FirstOrDefaultAsync(x => x.Id == fromWalletId);
-
-            if (fromWallet == null)
-                return Result<TransferResponseDTO>.Error("Счет отправителя не найден");
-
+               
             if (!Ulid.TryParse(transferCreationDTO.ToWalletId, out var toWalletId))
-                return Result<TransferResponseDTO>.Error("Неверный № счета получателя");
+                return Result<TransferResponseDTO>.Error("Неверный № счета получателя");         
 
-            var toWallet = await _context.Wallets
+            if (toWalletId == fromWalletId)
+                return Result<TransferResponseDTO>.Error("Нельзя перевести деньги на тот же счёт");
+           
+            using var transaction = await _context.Database.BeginTransactionAsync();
+         
+            try
+            {
+                var toWallet = await _context.Wallets
                 .FirstOrDefaultAsync(x => x.Id == toWalletId);
 
-            if (toWallet == null)
-                return Result<TransferResponseDTO>.Error("Счет получателя не найден");
+                if (toWallet == null)
+                    return Result<TransferResponseDTO>.Error("Счет получателя не найден");
 
-            if (transferCreationDTO.Amount > fromWallet.Balance)
-                return Result<TransferResponseDTO>.Error("Недостаточно средств");
+                var fromWallet = await _context.Wallets
+                   .FirstOrDefaultAsync(x => x.Id == fromWalletId);
 
-            fromWallet.Balance -= transferCreationDTO.Amount;
-            toWallet.Balance += transferCreationDTO.Amount;
+                if (fromWallet == null)
+                    return Result<TransferResponseDTO>.Error("Счет отправителя не найден");
 
-            var fromWalletTransaction = new Transaction(UserId, fromWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description);
-            var toWalletTransaction = new Transaction(toWallet.UserId, toWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description);
-            var newTransfer = new Transfer(fromWalletId, toWalletId, transferCreationDTO.Amount);
+                if (transferCreationDTO.Amount > fromWallet.Balance)
+                    return Result<TransferResponseDTO>.Error("Недостаточно средств");
 
-            _context.Transactions.Add(fromWalletTransaction);
-            _context.Transactions.Add(toWalletTransaction);
+                fromWallet.Balance -= transferCreationDTO.Amount;
+                toWallet.Balance += transferCreationDTO.Amount;
 
-            try  
-            {
+                var fromWalletTransaction = new Transaction(UserId, fromWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description);
+                var toWalletTransaction = new Transaction(toWallet.UserId, toWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description);
+                var newTransfer = new Transfer(fromWalletId, toWalletId, transferCreationDTO.Amount);
+
+                _context.Transactions.Add(fromWalletTransaction);
+                _context.Transactions.Add(toWalletTransaction);
+                _context.Transfers.Add(newTransfer);
+
                 await _context.SaveChangesAsync();
+                await _context.Database.CommitTransactionAsync();
+
                 return Result<TransferResponseDTO>.Success(new TransferResponseDTO(newTransfer));
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 return Result<TransferResponseDTO>.Error("Что-то пошло не так");
             }
 
