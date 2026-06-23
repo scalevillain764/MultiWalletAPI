@@ -20,14 +20,14 @@ namespace _transaction
         public TransactionStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? Description { get; set; }
-        public Transaction(Ulid userId, Ulid walletId, decimal amount, TransactionType type, TransactionStatus status, string? description)
+        public Transaction(Ulid userId, Ulid walletId, decimal amount, TransactionType type, string? description)
         {
             Id = Ulid.NewUlid();
             UserId = userId;
             WalletId = walletId;
             Amount = amount;
             Type = type;
-            Status = status;
+            Status = TransactionStatus.Pending;
             CreatedAt = DateTime.UtcNow;
             Description = description;
         }
