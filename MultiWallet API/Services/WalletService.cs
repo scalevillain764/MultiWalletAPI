@@ -26,6 +26,92 @@ namespace _wallet_service
                 return Result<WalletResponseDTO>.Error("Счет с такой валютой уже существует");
 
             var newWallet = new Wallet(walletCreationDTO.Name, UserId, (Wallet.Currency)walletCreationDTO.CurrencyEnum);
+
+            _context.Wallets.Add(newWallet); 
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Result<WalletResponseDTO>.Success(new WalletResponseDTO(newWallet));
+            }
+            catch (Exception ex)
+            {
+                return Result<WalletResponseDTO>.Error("Что-то пошло не так");
+            }
+        }
+        public async Task<Result<WalletResponseDTO>> RemoveWalletAsync(Ulid UserId, Ulid WalletId)
+        {
+            var wallet = await _context.Wallets
+                .FirstOrDefaultAsync(x => x.Id == WalletId);
+
+            if (wallet == null)
+                return Result<WalletResponseDTO>.Error("Счет не найден");
+
+            if (wallet.Balance > 0)
+                return Result<WalletResponseDTO>.Error("Сумма на счете должна быть нулевая, чтобы его удалить");
+
+            var responseDTO = new WalletResponseDTO(wallet);
+
+            _context.Wallets.Remove(wallet);
+            
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Result<WalletResponseDTO>.Success(responseDTO);
+            }
+            catch (Exception ex)
+            {
+                return Result<WalletResponseDTO>.Error("Что-то пошло не так");
+            }
+        }
+        public async Task<Result<WalletResponseDTO>> ChangeWalletNameAsync(Ulid UserId, Ulid WalletId, string NewName)
+        {
+            var wallet = await _context.Wallets
+                .FirstOrDefaultAsync(x => x.Id == WalletId);
+
+            if (wallet == null)
+                return Result<WalletResponseDTO>.Error("Счет не найден");
+
+            wallet.Name = NewName;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Result<WalletResponseDTO>.Success(new WalletResponseDTO(wallet));
+            }
+            catch (Exception ex)
+            {
+                return Result<WalletResponseDTO>.Error("Что-то пошло не так");
+            }
+        }
+        public async Task<Result<WalletResponseDTO>> ReplenishBalanceAsync(Ulid UserId, Ulid WalletId, decimal Amount) // пока так для примера, потом будет интеграция с ПС
+        {
+            var wallet = await _context.Wallets
+                .FirstOrDefaultAsync(x => x.Id == WalletId);
+
+            if (wallet == null)
+                return Result<WalletResponseDTO>.Error("Счет не найден");
+
+            wallet.Balance += Amount;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Result<WalletResponseDTO>.Success(new WalletResponseDTO(wallet));
+            }
+            catch (Exception ex)
+            {
+                return Result<WalletResponseDTO>.Error("Что-то пошло не так");
+            }
+        }
+        public async Task<Result<List<WalletResponseDTO>>> GetAllAsync(Ulid UserId)
+        {
+            var rez = await _context.Wallets      
+                .Where(x => x.UserId == UserId)
+                .Select(x => new WalletResponseDTO(x))
+                .ToListAsync();
+
+            return Result<List<WalletResponseDTO>>.Success(rez);
         }
     }
 }
