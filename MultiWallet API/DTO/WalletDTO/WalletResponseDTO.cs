@@ -9,6 +9,7 @@ namespace _wallet_response_dto
         public string Currency { get; set; }
         public decimal Balance { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public WalletResponseDTO(Wallet wallet)
         {
             Name = wallet.Name;
@@ -17,6 +18,7 @@ namespace _wallet_response_dto
             Currency = wallet._Currency.ToString();
             Balance = wallet.Balance;
             CreatedAt = wallet.CreatedAt;
+            DeletedAt = wallet.DeletedAt;
         }
     }
 }

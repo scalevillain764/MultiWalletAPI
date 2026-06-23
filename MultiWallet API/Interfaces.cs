@@ -13,6 +13,10 @@ using _user_login_response_dto;
 using _wallet_creation_dto;
 using _wallet_response_dto;
 
+// Transfer DTO
+using _tranfser_response_dto;
+using _transfer_creation_dto;
+
 namespace _interfaces
 {
     public interface IEntity
@@ -39,6 +43,6 @@ namespace _interfaces
 
     public interface ITransferService
     {
-        Task<>
+        Task<Result<TransferResponseDTO>> MakeTransfer(Ulid UserId, TransferCreationDTO transferCreationDTO);
     }
 }

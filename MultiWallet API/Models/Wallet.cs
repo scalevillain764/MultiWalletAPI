@@ -13,6 +13,7 @@ namespace _wallet
         public Currency _Currency { get; set; }
         public decimal Balance { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public Wallet(string Name, Ulid UserId, Currency Currency)
         {
             Id = Ulid.NewUlid();
@@ -21,6 +22,7 @@ namespace _wallet
             _Currency = Currency;
             Balance = 0;
             CreatedAt = DateTime.UtcNow;
+            DeletedAt = null;
         }
     }
 }

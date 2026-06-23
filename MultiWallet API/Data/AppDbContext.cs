@@ -1,5 +1,7 @@
 ﻿using _user;
 using _wallet;
+using _transaction;
+using _transfer;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
 namespace _context
@@ -8,6 +10,8 @@ namespace _context
     {
         public DbSet<Wallet> Wallets { get; set; } // счета
         public DbSet<User> Users { get; set; } // пользователи
+        public DbSet <Transaction> Transactions { get; set; }
+        public DbSet <Transfer> Transfers { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -30,6 +34,11 @@ namespace _context
                 .HasMany(u => u.Wallets)
                 .WithOne(w => w._User)
                 .HasForeignKey(w => w.UserId);
+
+            builder.Entity<User>()
+                .HasMany(u => u.Transactions)
+                .WithOne(t => t.User)
+                .HasForeignKey(t => t.UserId);
 
         }
     }

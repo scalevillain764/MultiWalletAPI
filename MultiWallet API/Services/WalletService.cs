@@ -52,8 +52,8 @@ namespace _wallet_service
 
             var responseDTO = new WalletResponseDTO(wallet);
 
-            _context.Wallets.Remove(wallet);
-            
+            wallet.DeletedAt = DateTime.UtcNow;
+
             try
             {
                 await _context.SaveChangesAsync();
