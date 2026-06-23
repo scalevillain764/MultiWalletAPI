@@ -36,4 +36,9 @@ namespace _interfaces
         Task<Result<WalletResponseDTO>> ReplenishBalanceAsync(Ulid UserId, Ulid WalletId, decimal Amount);
         Task<Result<List<WalletResponseDTO>>> GetAllAsync(Ulid UserId);
     }
+
+    public interface ITransferService
+    {
+        Task<>
+    }
 }
