@@ -1,19 +1,28 @@
 ﻿using _user;
+using _wallet;
 namespace _transfer
 {
     public class Transfer
     {
-        public Ulid FromId { get; set; }
+        public Ulid FromUserId { get; set; }
         public User FromUser { get; set; } = null;
-        public Ulid ToId { get; set; }
+
+        public Ulid FromWalletId { get; set; }
+        public Wallet FromWallet { get; set; } = null;
+
+        public Ulid ToUserId { get; set; }
         public User ToUser { get; set; } = null;
+
+        public Ulid ToWalletId { get; set; }
+        public Wallet ToWallet { get; set; } = null;
+
         public decimal Amount { get; set; }
-        public Transfer(Ulid fromId, User fromUser, Ulid toId, User toUser, decimal amount)
+        public Transfer(Ulid fromUserId, Ulid fromWalletId, Ulid toUserId, Ulid toWalletId, decimal amount)
         {
-            FromId = fromId;
-            FromUser = fromUser;
-            ToId = toId;
-            ToUser = toUser;
+            FromUserId = fromUserId;
+            FromWalletId = fromWalletId;
+            ToUserId = toUserId;
+            ToWalletId = toWalletId;
             Amount = amount;
         }
     }
