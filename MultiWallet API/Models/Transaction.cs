@@ -20,8 +20,8 @@ namespace _transaction
         public TransactionStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? Description { get; set; }
-        public Category Category { get; set; }
-        public Transaction(Ulid userId, Ulid walletId, decimal amount, TransactionType type, string? description, Category category)
+        public Category? Category { get; set; }
+        public Transaction(Ulid userId, Ulid walletId, decimal amount, TransactionType type, string? description, Category? category)
         {
             Id = Ulid.NewUlid();
             UserId = userId;

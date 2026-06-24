@@ -43,14 +43,18 @@ namespace _transfer_service
                 if (fromWallet == null)
                     return Result<TransferResponseDTO>.Error("Счет отправителя не найден");
 
+                if (fromWallet.UserId != UserId)
+                    return Result<TransferResponseDTO>.Error("Счет не найден");
+                    return Result<TransferResponseDTO>.Error("Счет не найден");
+
                 if (transferCreationDTO.Amount > fromWallet.Balance)
                     return Result<TransferResponseDTO>.Error("Недостаточно средств");
 
                 fromWallet.Balance -= transferCreationDTO.Amount;
                 toWallet.Balance += transferCreationDTO.Amount;
 
-                var fromWalletTransaction = new Transaction(UserId, fromWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description);
-                var toWalletTransaction = new Transaction(toWallet.UserId, toWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description);
+                var fromWalletTransaction = new Transaction(UserId, fromWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description, null);
+                var toWalletTransaction = new Transaction(toWallet.UserId, toWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description, null);
                 var newTransfer = new Transfer(fromWalletId, toWalletId, transferCreationDTO.Amount);
 
                 _context.Transactions.Add(fromWalletTransaction);
