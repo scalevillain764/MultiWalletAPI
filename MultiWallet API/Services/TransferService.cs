@@ -44,8 +44,7 @@ namespace _transfer_service
                     return Result<TransferResponseDTO>.Error("Счет отправителя не найден");
 
                 if (fromWallet.UserId != UserId)
-                    return Result<TransferResponseDTO>.Error("Счет не найден");
-                    return Result<TransferResponseDTO>.Error("Счет не найден");
+                    return Result<TransferResponseDTO>.Error("Счет не принадлежит пользователю");
 
                 if (transferCreationDTO.Amount > fromWallet.Balance)
                     return Result<TransferResponseDTO>.Error("Недостаточно средств");
