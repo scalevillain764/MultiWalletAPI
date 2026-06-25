@@ -102,9 +102,10 @@ namespace _transfer_service
 
                 var toWalletTransaction = new Transaction(toWallet.UserId, toWalletId, convertedAmount, Transaction.TransactionType.Transfer, transferCreationDTO.Description, null);
                 toWalletTransaction.Status = Transaction.TransactionStatus.Completed;
-
                 
-                var newTransfer = new Transfer(fromWallet.UserId, fromWalletId, toWalletId, transferCreationDTO.Amount, convertedAmount, exchangeRate, fromWallet._Currency, toWallet._Currency);
+                var newTransfer = new Transfer(fromWallet.UserId, fromWalletId, toWalletId, 
+                    transferCreationDTO.Amount, convertedAmount, exchangeRate, 
+                    fromWallet._Currency, toWallet._Currency);
 
                 _context.Transactions.Add(fromWalletTransaction);
                 _context.Transactions.Add(toWalletTransaction);
