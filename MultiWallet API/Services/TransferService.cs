@@ -1,18 +1,26 @@
-﻿using _tranfser_response_dto;
-using _transfer_creation_dto;
-using _interfaces;
+﻿using _interfaces;
 using _context;
 using _result;
 using _transaction;
-using Microsoft.EntityFrameworkCore;
 using _transfer;
+
+using Microsoft.EntityFrameworkCore;
+
+using _tranfser_response_dto;
+using _transfer_creation_dto;
+using _exchange_response;
+
 namespace _transfer_service
 {
     public class TransferService : ITransferService
     {
         private readonly AppDbContext _context;
-        public TransferService(AppDbContext context)
+        private readonly IHttpClientFactory _factory;
+        private readonly IConfiguration _configuration;
+        public TransferService(AppDbContext context, IHttpClientFactory factory, IConfiguration configuration)
         {
+            _configuration = configuration;
+            _factory = factory;
             _context = context; 
         }
 
@@ -26,11 +34,15 @@ namespace _transfer_service
 
             if (toWalletId == fromWalletId)
                 return Result<TransferResponseDTO>.Error("Нельзя перевести деньги на тот же счёт");
-           
+  
+            string api_key = _configuration["Exchange_api_key"];
+          
             using var transaction = await _context.Database.BeginTransactionAsync();
          
             try
             {
+                var newTransfer = new Transfer(fromWalletId, toWalletId, transferCreationDTO.Amount);
+
                 var toWallet = await _context.Wallets
                 .FirstOrDefaultAsync(x => x.Id == toWalletId);
 
@@ -49,12 +61,50 @@ namespace _transfer_service
                 if (transferCreationDTO.Amount > fromWallet.Balance)
                     return Result<TransferResponseDTO>.Error("Недостаточно средств");
 
+                // http client
+                var client = _factory.CreateClient();
+                ExchangeApiResponse ExchangeResponse = new();
+
+                try
+                {
+                    var response = await client.GetAsync($"https://v6.exchangerate-api.com/v6/{api_key}/latest/USD");
+
+                    if(response.IsSuccessStatusCode)
+                    {
+                        try
+                        {
+                            ExchangeResponse = await response.Content.ReadFromJsonAsync<ExchangeApiResponse>();
+                        }
+                        catch (OperationCanceledException oce)
+                        {
+                            Console.WriteLine($"Ошибка парсинга: {oce.Message}");
+                        }
+                    }
+                            
+                }
+                catch (HttpRequestException e) // потом поменять
+                {
+                    Console.WriteLine($"Ошибка сети при запросе: {e.Message}");
+                }
+
+                if(ExchangeResponse.ConversionRates.Count == 0)
+                    return Result<TransferResponseDTO>.Error("Ошибка валюты");
+
+                decimal fromWalletExchange = ExchangeResponse.ConversionRates[$"{fromWallet._Currency.ToString()}"];
+                decimal toWalletExchange = ExchangeResponse.ConversionRates[$"{toWallet._Currency.ToString()}"];
+
+                decimal convertedAmount = Math.Round(transferCreationDTO.Amount / fromWalletExchange * toWalletExchange, 2);
+
                 fromWallet.Balance -= transferCreationDTO.Amount;
-                toWallet.Balance += transferCreationDTO.Amount;
+                toWallet.Balance += convertedAmount;
 
                 var fromWalletTransaction = new Transaction(UserId, fromWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description, null);
-                var toWalletTransaction = new Transaction(toWallet.UserId, toWalletId, transferCreationDTO.Amount, Transaction.TransactionType.Transfer, transferCreationDTO.Description, null);
-                var newTransfer = new Transfer(fromWalletId, toWalletId, transferCreationDTO.Amount);
+                fromWalletTransaction.Status = Transaction.TransactionStatus.Completed;
+
+                var toWalletTransaction = new Transaction(toWallet.UserId, toWalletId, convertedAmount, Transaction.TransactionType.Transfer, transferCreationDTO.Description, null);
+                toWalletTransaction.Status = Transaction.TransactionStatus.Completed;
+
+                newTransfer.Status = Transfer.TransferStatus.Completed;
 
                 _context.Transactions.Add(fromWalletTransaction);
                 _context.Transactions.Add(toWalletTransaction);
@@ -70,8 +120,6 @@ namespace _transfer_service
                 await transaction.RollbackAsync();
                 return Result<TransferResponseDTO>.Error("Что-то пошло не так");
             }
-
-            // потом доделать курсы валют с апи!
         }
     }
 }
