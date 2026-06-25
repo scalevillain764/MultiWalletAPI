@@ -51,6 +51,11 @@ namespace _context
                 .WithMany() 
                 .HasForeignKey(t => t.ToWalletId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Transfer>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Transfers)
+                .HasForeignKey(x => x.UserId);
         }
     }
 }
