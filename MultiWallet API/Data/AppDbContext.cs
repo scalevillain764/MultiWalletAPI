@@ -55,7 +55,7 @@ namespace _context
             builder.Entity<Transfer>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.Transfers)
-                .HasForeignKey(x => x.UserId);
+                .HasForeignKey(x => x.SourceUserId);
         }
     }
 }

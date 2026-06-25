@@ -5,6 +5,7 @@ namespace _transfer
     public class Transfer
     {
         public Ulid SourceUserId { get; set; }
+
         public User User { get; set; } = null!;
         public Ulid Id { get; set; }
 

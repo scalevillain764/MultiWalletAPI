@@ -41,8 +41,6 @@ namespace _transfer_service
          
             try
             {
-                var newTransfer = new Transfer(fromWalletId, toWalletId, transferCreationDTO.Amount);
-
                 var toWallet = await _context.Wallets
                 .FirstOrDefaultAsync(x => x.Id == toWalletId);
 
@@ -92,6 +90,7 @@ namespace _transfer_service
 
                 decimal fromWalletExchange = ExchangeResponse.ConversionRates[$"{fromWallet._Currency.ToString()}"];
                 decimal toWalletExchange = ExchangeResponse.ConversionRates[$"{toWallet._Currency.ToString()}"];
+                decimal exchangeRate = Math.Round(fromWalletExchange / toWalletExchange, 2);
 
                 decimal convertedAmount = Math.Round(transferCreationDTO.Amount / fromWalletExchange * toWalletExchange, 2);
 
@@ -104,7 +103,8 @@ namespace _transfer_service
                 var toWalletTransaction = new Transaction(toWallet.UserId, toWalletId, convertedAmount, Transaction.TransactionType.Transfer, transferCreationDTO.Description, null);
                 toWalletTransaction.Status = Transaction.TransactionStatus.Completed;
 
-                newTransfer.Status = Transfer.TransferStatus.Completed;
+                
+                var newTransfer = new Transfer(fromWallet.UserId, fromWalletId, toWalletId, transferCreationDTO.Amount, convertedAmount, exchangeRate, fromWallet._Currency, toWallet._Currency);
 
                 _context.Transactions.Add(fromWalletTransaction);
                 _context.Transactions.Add(toWalletTransaction);
