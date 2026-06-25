@@ -4,26 +4,42 @@ namespace _transfer
 {
     public class Transfer
     {
-        public enum TransferStatus { Pending = 1, Completed = 2, Failed = 3}
-
+        public Ulid SourceUserId { get; set; }
         public Ulid Id { get; set; }
+
         public Ulid FromWalletId { get; set; }
-        public Wallet FromWallet { get; set; } = null;
+        public Wallet FromWallet { get; set; } = null!;
 
         public Ulid ToWalletId { get; set; }
-        public Wallet ToWallet { get; set; } = null;
+        public Wallet ToWallet { get; set; } = null!;
 
-        public decimal Amount { get; set; }
+        public decimal SourceAmount { get; set; }
+        public decimal DestinationAmount { get; set; }
+        public decimal ExchangeRate { get; set; }
+        
+        public Wallet.Currency SourceCurrency { get; set; }
+        public Wallet.Currency DestinationCurrency { get; set; }
+
         public DateTime CreatedAt { get; set; }
-        public TransferStatus Status { get; set; }
-        public Transfer(Ulid fromWalletId, Ulid toWalletId, decimal amount)
+
+        public Transfer(Ulid sourceUserId, Ulid fromWalletId, Ulid toWalletId,
+            decimal sourceAmount, decimal destinationAmount, decimal exhcangeRate,
+            Wallet.Currency sourceCurrency, Wallet.Currency destinationCurrency)
         {
             Id = Ulid.NewUlid();
+
+            SourceUserId = sourceUserId;
             FromWalletId = fromWalletId;
             ToWalletId = toWalletId;
-            Amount = amount;
+
+            SourceAmount = sourceAmount;
+            DestinationAmount = destinationAmount;
+            ExchangeRate = exhcangeRate;
+
+            SourceCurrency = sourceCurrency;
+            DestinationCurrency = destinationCurrency;
+
             CreatedAt = DateTime.UtcNow;
-            Status = TransferStatus.Pending;
         }
     }
 }

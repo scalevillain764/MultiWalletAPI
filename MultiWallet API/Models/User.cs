@@ -12,6 +12,7 @@ namespace _user
         public string? RefreshToken { get; set; }
         public List<Wallet> Wallets { get; set; } = new(); // np
         public List<Transaction> Transactions { get; set; } = new();
+        // добавить transfers
         public DateTime? RefreshTokenExpiresAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public User(string login, string passwordHash)
