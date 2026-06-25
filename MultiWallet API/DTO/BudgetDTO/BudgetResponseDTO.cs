@@ -1,13 +1,11 @@
-﻿using _expense_creation_dto;
-
-namespace _expense_response_dto
+﻿namespace _budget_response_dto
 {
-    public class ExpenseResponseDTO
+    public class BudgetResponseDTO
     {
         public string WalletId { get; set; }
         public string Category { get; set; }
         public decimal Amount { get; set; }
-        public ExpenseResponseDTO(string walletId, string category, decimal amount)
+        public BudgetResponseDTO(string walletId, string category, decimal amount)
         {
             WalletId = walletId;
             Category = category;

@@ -17,9 +17,9 @@ using _wallet_response_dto;
 using _tranfser_response_dto;
 using _transfer_creation_dto;
 
-    // Expenses DTO
-using _expense_creation_dto;
-using _expense_response_dto;
+    // Budget DTO
+using _budget_creation_dto;
+using _budget_response_dto;
 
 namespace _interfaces
 {
@@ -52,6 +52,7 @@ namespace _interfaces
 
     public interface IBudgetService
     {
-        Task<Result<ExpenseResponseDTO>> MakeExpense(Ulid UserId, ExpenseCreationDTO expenseCreationDTO);
+        Task<Result<BudgetResponseDTO>> MakeExpense(Ulid UserId, BudgetCreationDTO expenseCreationDTO);
+        Task<Result<BudgetResponseDTO>> MakeIncome(Ulid UserId, BudgetCreationDTO incomeCreationDTO);
     }
 }
