@@ -1,3 +1,11 @@
+using _exception_middleware;
+using _auth_service;
+using _budget_service;
+using _transfer_service;
+using _wallet_service;
+using _interfaces;
+using _context;
+using Microsoft.EntityFrameworkCore;
 namespace MultiWallet_API
 {
     public class Program
@@ -6,28 +14,39 @@ namespace MultiWallet_API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddScoped<IWalletService, WalletService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ITransferService, TransferService>();
+            builder.Services.AddScoped<IBudgetService, BudgetService>();
+
+            builder.Services.AddDbContext<AppDbContext>(x =>
+            {
+                x.UseSqlite("DataSource=MultiWalletDataBase.db");
+            });
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
+            
 
+            // middleware
+            app.UseMiddleware<ExceptionMiddleware>();
+            app.UseAuthentication();
             app.UseAuthorization();
+            // middleware
 
             app.MapStaticAssets();
             app.MapRazorPages()
                .WithStaticAssets();
+            app.MapControllers();
 
             app.Run();
         }

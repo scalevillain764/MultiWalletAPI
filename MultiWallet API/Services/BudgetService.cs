@@ -42,12 +42,9 @@ namespace _budget_service
 
                 wallet.Balance -= CreationDTO.Amount;
 
-                if (!Enum.TryParse<Category>(CreationDTO.Category, out var cat))
-                    return Result<BudgetResponseDTO>.Error("Неверная категория");
-
                 var _transaction = new Transaction(UserId, WalletId,
                     CreationDTO.Amount, Transaction.TransactionType.Expense,
-                    CreationDTO.Description, cat);
+                    CreationDTO.Description, (Category)CreationDTO.Category);
 
                 _context.Transactions.Add(_transaction);
 
@@ -56,7 +53,7 @@ namespace _budget_service
 
                 return Result<BudgetResponseDTO>.Success(new BudgetResponseDTO(
                     CreationDTO.WalletId,
-                    CreationDTO.Category,
+                    ((Category)CreationDTO.Category).ToString(),
                     CreationDTO.Amount
                     ));
             }
@@ -87,12 +84,9 @@ namespace _budget_service
 
                 wallet.Balance += CreationDTO.Amount;
 
-                if (!Enum.TryParse<Category>(CreationDTO.Category, out var cat))
-                    return Result<BudgetResponseDTO>.Error("Неверная категория");
-
                 var _transaction = new Transaction(UserId, WalletId,
-                    CreationDTO.Amount, Transaction.TransactionType.Income,
-                    CreationDTO.Description, cat);
+                     CreationDTO.Amount, Transaction.TransactionType.Expense,
+                     CreationDTO.Description, (Category)CreationDTO.Category);
 
                 _context.Transactions.Add(_transaction);
 
@@ -101,7 +95,7 @@ namespace _budget_service
 
                 return Result<BudgetResponseDTO>.Success(new BudgetResponseDTO(
                     CreationDTO.WalletId,
-                    CreationDTO.Category,
+                    ((Category)CreationDTO.Category).ToString(),
                     CreationDTO.Amount
                     ));
             }
