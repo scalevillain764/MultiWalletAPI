@@ -19,7 +19,7 @@ namespace _budget_service
             _context = context;
         }
 
-        public async Task<Result<BudgetResponseDTO>> MakeExpense(Ulid UserId, BudgetCreationDTO CreationDTO)
+        public async Task<Result<BudgetResponseDTO>> MakeExpenseAsync(Ulid UserId, BudgetCreationDTO CreationDTO)
         {
             if (!Ulid.TryParse(CreationDTO.WalletId, out var WalletId))
                 return Result<BudgetResponseDTO>.Error("Неверный номер счета", Result<BudgetResponseDTO>.ErrorType.Validation);
@@ -56,7 +56,7 @@ namespace _budget_service
                 ));
         }
 
-        public async Task<Result<BudgetResponseDTO>> MakeIncome(Ulid UserId, BudgetCreationDTO CreationDTO)
+        public async Task<Result<BudgetResponseDTO>> MakeIncomeAsync(Ulid UserId, BudgetCreationDTO CreationDTO)
         {
             if (!Ulid.TryParse(CreationDTO.WalletId, out var WalletId))
                 return Result<BudgetResponseDTO>.Error("Неверный номер счета", Result<BudgetResponseDTO>.ErrorType.Validation);

@@ -40,6 +40,9 @@ namespace _wallet_service
             if (wallet == null)
                 return Result<WalletResponseDTO>.Error("Счет не найден", Result<WalletResponseDTO>.ErrorType.NotFound);
 
+            if (wallet.UserId != UserId)
+                return Result<WalletResponseDTO>.Error("Счет не принадлежит пользователю", Result<WalletResponseDTO>.ErrorType.Forbidden);
+
             if (wallet.Balance > 0)
                 return Result<WalletResponseDTO>.Error("Сумма на счете должна быть нулевая, чтобы его удалить", Result<WalletResponseDTO>.ErrorType.Forbidden);
 
@@ -58,6 +61,9 @@ namespace _wallet_service
             if (wallet == null)
                 return Result<WalletResponseDTO>.Error("Счет не найден", Result<WalletResponseDTO>.ErrorType.NotFound);
 
+            if (wallet.UserId != UserId)
+                return Result<WalletResponseDTO>.Error("Счет не принадлежит пользователю", Result<WalletResponseDTO>.ErrorType.Forbidden);
+
             wallet.Name = NewName;
 
             await _context.SaveChangesAsync();
@@ -70,6 +76,9 @@ namespace _wallet_service
 
             if (wallet == null)
                 return Result<WalletResponseDTO>.Error("Счет не найден", Result<WalletResponseDTO>.ErrorType.NotFound);
+
+            if (wallet.UserId != UserId)
+                return Result<WalletResponseDTO>.Error("Счет не принадлежит пользователю", Result<WalletResponseDTO>.ErrorType.Forbidden);
 
             wallet.Balance += Amount;
 

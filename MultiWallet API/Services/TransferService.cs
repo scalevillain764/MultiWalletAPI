@@ -24,7 +24,7 @@ namespace _transfer_service
             _context = context; 
         }
 
-        public async Task<Result<TransferResponseDTO>> MakeTransfer(Ulid UserId, TransferCreationDTO transferCreationDTO)
+        public async Task<Result<TransferResponseDTO>> MakeTransferAsync(Ulid UserId, TransferCreationDTO transferCreationDTO)
         {
             if (!Ulid.TryParse(transferCreationDTO.FromWalletId, out var fromWalletId))
                 return Result<TransferResponseDTO>.Error("Неверный № счета отправителя", Result<TransferResponseDTO>.ErrorType.Validation);

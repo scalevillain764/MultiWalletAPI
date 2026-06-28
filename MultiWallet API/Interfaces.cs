@@ -47,12 +47,12 @@ namespace _interfaces
 
     public interface ITransferService
     {
-        Task<Result<TransferResponseDTO>> MakeTransfer(Ulid UserId, TransferCreationDTO transferCreationDTO);
+        Task<Result<TransferResponseDTO>> MakeTransferAsync(Ulid UserId, TransferCreationDTO transferCreationDTO);
     }
 
     public interface IBudgetService
     {
-        Task<Result<BudgetResponseDTO>> MakeExpense(Ulid UserId, BudgetCreationDTO expenseCreationDTO);
-        Task<Result<BudgetResponseDTO>> MakeIncome(Ulid UserId, BudgetCreationDTO incomeCreationDTO);
+        Task<Result<BudgetResponseDTO>> MakeExpenseAsync(Ulid UserId, BudgetCreationDTO expenseCreationDTO);
+        Task<Result<BudgetResponseDTO>> MakeIncomeAsync(Ulid UserId, BudgetCreationDTO incomeCreationDTO);
     }
 }
