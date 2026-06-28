@@ -14,16 +14,19 @@ namespace MultiWallet_API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddRazorPages();
             builder.Services.AddScoped<IWalletService, WalletService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITransferService, TransferService>();
             builder.Services.AddScoped<IBudgetService, BudgetService>();
-
+           
             builder.Services.AddDbContext<AppDbContext>(x =>
             {
                 x.UseSqlite("DataSource=MultiWalletDataBase.db");
             });
+
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddHttpClient();
+            builder.Services.AddControllers();
 
             var app = builder.Build();
 
@@ -42,9 +45,6 @@ namespace MultiWallet_API
             app.UseAuthorization();
             // middleware
 
-            app.MapStaticAssets();
-            app.MapRazorPages()
-               .WithStaticAssets();
             app.MapControllers();
 
             app.Run();

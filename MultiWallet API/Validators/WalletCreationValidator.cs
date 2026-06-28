@@ -1,6 +1,5 @@
 ﻿using _wallet_creation_dto;
 using FluentValidation;
-
 namespace _wallet_creation_validator
 {
     public class WalletCreationValidator : AbstractValidator<WalletCreationDTO>

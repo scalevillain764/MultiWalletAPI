@@ -33,7 +33,7 @@ namespace _transfer_service
                 return Result<TransferResponseDTO>.Error("Неверный № счета получателя", Result<TransferResponseDTO>.ErrorType.Validation);         
 
             if (toWalletId == fromWalletId)
-                return Result<TransferResponseDTO>.Error("Нельзя перевести деньги на тот же счёт", Result<TransferResponseDTO>.ErrorType.);
+                return Result<TransferResponseDTO>.Error("Нельзя перевести деньги на тот же счёт", Result<TransferResponseDTO>.ErrorType.Forbidden);
   
             string api_key = _configuration["Exchange_api_key"];
           

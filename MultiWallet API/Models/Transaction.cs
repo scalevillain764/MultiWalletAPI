@@ -2,8 +2,6 @@
 using _wallet;
 using _interfaces;
 using _category;
-
-using Microsoft.AspNetCore.SignalR;
 namespace _transaction
 {
     public class Transaction : IEntity
@@ -32,6 +30,9 @@ namespace _transaction
             CreatedAt = DateTime.UtcNow;
             Description = description;
             Category = category;
+        }
+        private Transaction()
+        {
         }
     }
 }

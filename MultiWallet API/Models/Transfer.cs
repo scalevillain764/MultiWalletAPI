@@ -5,8 +5,8 @@ namespace _transfer
     public class Transfer
     {
         public Ulid SourceUserId { get; set; }
-
         public User User { get; set; } = null!;
+
         public Ulid Id { get; set; }
 
         public Ulid FromWalletId { get; set; }
@@ -25,7 +25,7 @@ namespace _transfer
         public DateTime CreatedAt { get; set; }
 
         public Transfer(Ulid sourceUserId, Ulid fromWalletId, Ulid toWalletId,
-            decimal sourceAmount, decimal destinationAmount, decimal exhcangeRate,
+            decimal sourceAmount, decimal destinationAmount, decimal exchangeRate,
             Wallet.Currency sourceCurrency, Wallet.Currency destinationCurrency)
         {
             Id = Ulid.NewUlid();
@@ -36,7 +36,7 @@ namespace _transfer
 
             SourceAmount = sourceAmount;
             DestinationAmount = destinationAmount;
-            ExchangeRate = exhcangeRate;
+            ExchangeRate = exchangeRate;
 
             SourceCurrency = sourceCurrency;
             DestinationCurrency = destinationCurrency;

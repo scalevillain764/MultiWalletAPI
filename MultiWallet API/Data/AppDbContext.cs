@@ -12,7 +12,8 @@ namespace _context
         public DbSet<User> Users { get; set; } // пользователи
         public DbSet <Transaction> Transactions { get; set; }
         public DbSet <Transfer> Transfers { get; set; }
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+       : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<User>()
@@ -23,12 +24,65 @@ namespace _context
                 str => Ulid.Parse(str)
             );
 
+            // conversions
             builder.Entity<User>()
                 .Property(u => u.Id)
                 .HasConversion(ulidToStringConverter)
                 .HasMaxLength(26) 
                 .IsFixedLength()  
                 .ValueGeneratedNever();
+
+            builder.Entity<Wallet>()
+                .Property(u => u.Id)
+                .HasConversion(ulidToStringConverter)
+                .HasMaxLength(26)
+                .IsFixedLength()
+                .ValueGeneratedNever();
+
+            builder.Entity<Wallet>()
+               .Property(u => u.UserId)
+               .HasConversion(ulidToStringConverter)
+               .HasMaxLength(26)
+               .IsFixedLength();
+
+            builder.Entity<Transfer>()
+               .Property(u => u.Id)
+               .HasConversion(ulidToStringConverter)
+               .HasMaxLength(26)
+               .IsFixedLength()
+               .ValueGeneratedNever();
+
+            builder.Entity<Transaction>()
+              .Property(u => u.Id)
+              .HasConversion(ulidToStringConverter)
+              .HasMaxLength(26)
+              .IsFixedLength()
+              .ValueGeneratedNever();
+
+            builder.Entity<Transaction>()
+              .Property(u => u.UserId)
+              .HasConversion(ulidToStringConverter)
+              .HasMaxLength(26)
+              .IsFixedLength();
+
+            builder.Entity<Transaction>()
+                .Property(u => u.WalletId)
+                .HasConversion(ulidToStringConverter)
+                .HasMaxLength(26)
+                .IsFixedLength();
+
+            builder.Entity<Transfer>()
+               .Property(u => u.SourceUserId)
+               .HasConversion(ulidToStringConverter)
+               .HasMaxLength(26)
+               .IsFixedLength();
+
+            builder.Entity<Transfer>()
+               .Property(u => u.FromWalletId)
+               .HasConversion(ulidToStringConverter)
+               .HasMaxLength(26)
+               .IsFixedLength();
+            // conversions
 
             builder.Entity<User>()
                 .HasMany(u => u.Wallets)

@@ -29,7 +29,7 @@ namespace _interfaces
         [HttpDelete]
         public async Task<IActionResult> RemoveWalletAsync([FromQuery] string walletIdStr)
         {
-            var walletId = ConverStringToUlid(walletIdStr);
+            var walletId = ConvertStringToUlid(walletIdStr);
             var userId = GetUserId();
             var rez = await _service.RemoveWalletAsync(userId, walletId);
             return ProcessResult(rez);
@@ -39,7 +39,7 @@ namespace _interfaces
         [Route("update-name")]
         public async Task<IActionResult> ChangeWalletNameAsync([FromQuery] string walletIdStr, [FromBody] WalletRenameDTO DTO)
         {
-            var walletId = ConverStringToUlid(walletIdStr);
+            var walletId = ConvertStringToUlid(walletIdStr);
             var userId = GetUserId();
             var rez = await _service.ChangeWalletNameAsync(userId, walletId, DTO.Name);
             return ProcessResult(rez);
@@ -49,7 +49,7 @@ namespace _interfaces
         [Route("update-balance")]
         public async Task<IActionResult> ReplenishBalanceAsync([FromQuery] string walletIdStr, [FromBody] WalletReplenishDTO DTO)
         {
-            var walletId = ConverStringToUlid(walletIdStr);
+            var walletId = ConvertStringToUlid(walletIdStr);
             var userId = GetUserId();
             var rez = await _service.ReplenishBalanceAsync(userId, walletId, DTO.Amount);
             return ProcessResult(rez);
