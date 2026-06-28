@@ -82,12 +82,12 @@ namespace _auth_service
                 .FirstOrDefaultAsync(x => x.Login == loginDTO.Login);
 
             if (user == null)
-                return Result<UserLogInResponseDTO>.Error("Ошибка: неверный логин");
+                return Result<UserLogInResponseDTO>.Error("Ошибка: неверный логин", Result<UserLogInResponseDTO>.ErrorType.Validation);
 
             bool IsOk = BCrypt.Net.BCrypt.EnhancedVerify(loginDTO.Password, user.PasswordHash);
 
             if(!IsOk)
-                return Result<UserLogInResponseDTO>.Error("Ошибка: неверный пароль");
+                return Result<UserLogInResponseDTO>.Error("Ошибка: неверный пароль", Result<UserLogInResponseDTO>.ErrorType.Validation);
 
             string AccessToken = AppendCookiesAndGetAccessToken(user);
 
@@ -101,7 +101,7 @@ namespace _auth_service
                 .AnyAsync(x => x.Login == loginDTO.Login);
 
             if (LoginExists)
-                return Result<UserRegistrationResponseDTO>.Error("Логин уже занят");
+                return Result<UserRegistrationResponseDTO>.Error("Логин уже занят", Result<UserRegistrationResponseDTO>.ErrorType.Validation);
 
             string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(loginDTO.Password);
 
@@ -118,21 +118,21 @@ namespace _auth_service
             var existingRefreshToken = _httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(existingRefreshToken))
-                return Result<UserLogInResponseDTO>.Error("Куки пусты");
+                return Result<UserLogInResponseDTO>.Error("Куки пусты", Result<UserLogInResponseDTO>.ErrorType.Unauthorized);
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.RefreshToken == existingRefreshToken);
 
             if (user == null)
-                return Result<UserLogInResponseDTO>.Error("Пользователь не найден");
+                return Result<UserLogInResponseDTO>.Error("Пользователь не найден", Result<UserLogInResponseDTO>.ErrorType.Unauthorized);
 
             if (user.RefreshTokenExpiresAt != null)
             {
                 if (user.RefreshTokenExpiresAt < DateTime.UtcNow)
-                    return Result<UserLogInResponseDTO>.Error("Сессия истекла");
+                    return Result<UserLogInResponseDTO>.Error("Сессия истекла", Result<UserLogInResponseDTO>.ErrorType.Unauthorized);
             }
             else
-                return Result<UserLogInResponseDTO>.Error("Ошибка сессии");
+                return Result<UserLogInResponseDTO>.Error("Ошибка сессии", Result<UserLogInResponseDTO>.ErrorType.Unauthorized);
 
             string AccessToken = AppendCookiesAndGetAccessToken(user);
 

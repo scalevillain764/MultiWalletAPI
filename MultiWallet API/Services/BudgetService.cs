@@ -22,7 +22,7 @@ namespace _budget_service
         public async Task<Result<BudgetResponseDTO>> MakeExpense(Ulid UserId, BudgetCreationDTO CreationDTO)
         {
             if (!Ulid.TryParse(CreationDTO.WalletId, out var WalletId))
-                return Result<BudgetResponseDTO>.Error("Неверный номер счета");
+                return Result<BudgetResponseDTO>.Error("Неверный номер счета", Result<BudgetResponseDTO>.ErrorType.Validation);
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -30,13 +30,13 @@ namespace _budget_service
                    .FirstOrDefaultAsync(x => x.Id == WalletId);
 
             if (wallet == null)
-                return Result<BudgetResponseDTO>.Error("Счет не найден");
+                return Result<BudgetResponseDTO>.Error("Счет не найден", Result<BudgetResponseDTO>.ErrorType.NotFound);
 
             if (wallet.UserId != UserId)
-                return Result<BudgetResponseDTO>.Error("Счет не принадлежит пользователю");
+                return Result<BudgetResponseDTO>.Error("Счет не принадлежит пользователю", Result<BudgetResponseDTO>.ErrorType.NotFound);
 
             if (CreationDTO.Amount > wallet.Balance)
-                return Result<BudgetResponseDTO>.Error("Недостаточно средств");
+                return Result<BudgetResponseDTO>.Error("Недостаточно средств", Result<BudgetResponseDTO>.ErrorType.Validation);
 
             wallet.Balance -= CreationDTO.Amount;
 
@@ -59,7 +59,7 @@ namespace _budget_service
         public async Task<Result<BudgetResponseDTO>> MakeIncome(Ulid UserId, BudgetCreationDTO CreationDTO)
         {
             if (!Ulid.TryParse(CreationDTO.WalletId, out var WalletId))
-                return Result<BudgetResponseDTO>.Error("Неверный номер счета");
+                return Result<BudgetResponseDTO>.Error("Неверный номер счета", Result<BudgetResponseDTO>.ErrorType.Validation);
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -67,10 +67,10 @@ namespace _budget_service
                    .FirstOrDefaultAsync(x => x.Id == WalletId);
 
             if (wallet == null)
-                return Result<BudgetResponseDTO>.Error("Счет не найден");
+                return Result<BudgetResponseDTO>.Error("Счет не найден", Result<BudgetResponseDTO>.ErrorType.NotFound);
 
             if (wallet.UserId != UserId)
-                return Result<BudgetResponseDTO>.Error("Счет не принадлежит пользователю");
+                return Result<BudgetResponseDTO>.Error("Счет не принадлежит пользователю", Result<BudgetResponseDTO>.ErrorType.NotFound);
 
             wallet.Balance += CreationDTO.Amount;
 

@@ -1,8 +1,8 @@
-﻿using _wallet;
+﻿using _context;
 using _interfaces;
-using _context;
 using _result;
-
+using _tranfser_response_dto;
+using _wallet;
 using _wallet_creation_dto;
 using _wallet_response_dto;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +23,7 @@ namespace _wallet_service
                 .AnyAsync(x => (int)x._Currency == walletCreationDTO.CurrencyEnum);
 
             if (currencyExists)
-                return Result<WalletResponseDTO>.Error("Счет с такой валютой уже существует");
+                return Result<WalletResponseDTO>.Error("Счет с такой валютой уже существует", Result<WalletResponseDTO>.ErrorType.Validation);
 
             var newWallet = new Wallet(walletCreationDTO.Name, UserId, (Wallet.Currency)walletCreationDTO.CurrencyEnum);
 
@@ -38,10 +38,10 @@ namespace _wallet_service
                 .FirstOrDefaultAsync(x => x.Id == WalletId);
 
             if (wallet == null)
-                return Result<WalletResponseDTO>.Error("Счет не найден");
+                return Result<WalletResponseDTO>.Error("Счет не найден", Result<WalletResponseDTO>.ErrorType.NotFound);
 
             if (wallet.Balance > 0)
-                return Result<WalletResponseDTO>.Error("Сумма на счете должна быть нулевая, чтобы его удалить");
+                return Result<WalletResponseDTO>.Error("Сумма на счете должна быть нулевая, чтобы его удалить", Result<WalletResponseDTO>.ErrorType.Forbidden);
 
             var responseDTO = new WalletResponseDTO(wallet);
 
@@ -56,7 +56,7 @@ namespace _wallet_service
                 .FirstOrDefaultAsync(x => x.Id == WalletId);
 
             if (wallet == null)
-                return Result<WalletResponseDTO>.Error("Счет не найден");
+                return Result<WalletResponseDTO>.Error("Счет не найден", Result<WalletResponseDTO>.ErrorType.NotFound);
 
             wallet.Name = NewName;
 
@@ -69,7 +69,7 @@ namespace _wallet_service
                 .FirstOrDefaultAsync(x => x.Id == WalletId);
 
             if (wallet == null)
-                return Result<WalletResponseDTO>.Error("Счет не найден");
+                return Result<WalletResponseDTO>.Error("Счет не найден", Result<WalletResponseDTO>.ErrorType.NotFound);
 
             wallet.Balance += Amount;
 

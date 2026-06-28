@@ -27,13 +27,13 @@ namespace _transfer_service
         public async Task<Result<TransferResponseDTO>> MakeTransfer(Ulid UserId, TransferCreationDTO transferCreationDTO)
         {
             if (!Ulid.TryParse(transferCreationDTO.FromWalletId, out var fromWalletId))
-                return Result<TransferResponseDTO>.Error("Неверный № счета отправителя");
+                return Result<TransferResponseDTO>.Error("Неверный № счета отправителя", Result<TransferResponseDTO>.ErrorType.Validation);
                
             if (!Ulid.TryParse(transferCreationDTO.ToWalletId, out var toWalletId))
-                return Result<TransferResponseDTO>.Error("Неверный № счета получателя");         
+                return Result<TransferResponseDTO>.Error("Неверный № счета получателя", Result<TransferResponseDTO>.ErrorType.Validation);         
 
             if (toWalletId == fromWalletId)
-                return Result<TransferResponseDTO>.Error("Нельзя перевести деньги на тот же счёт");
+                return Result<TransferResponseDTO>.Error("Нельзя перевести деньги на тот же счёт", Result<TransferResponseDTO>.ErrorType.);
   
             string api_key = _configuration["Exchange_api_key"];
           
@@ -43,19 +43,19 @@ namespace _transfer_service
                .FirstOrDefaultAsync(x => x.Id == toWalletId);
 
             if (toWallet == null)
-                return Result<TransferResponseDTO>.Error("Счет получателя не найден");
+                return Result<TransferResponseDTO>.Error("Счет получателя не найден", Result<TransferResponseDTO>.ErrorType.NotFound);
 
             var fromWallet = await _context.Wallets
                .FirstOrDefaultAsync(x => x.Id == fromWalletId);
 
             if (fromWallet == null)
-                return Result<TransferResponseDTO>.Error("Счет отправителя не найден");
+                return Result<TransferResponseDTO>.Error("Счет отправителя не найден", Result<TransferResponseDTO>.ErrorType.NotFound);
 
             if (fromWallet.UserId != UserId)
-                return Result<TransferResponseDTO>.Error("Счет не принадлежит пользователю");
+                return Result<TransferResponseDTO>.Error("Счет не принадлежит пользователю", Result<TransferResponseDTO>.ErrorType.Forbidden);
 
             if (transferCreationDTO.Amount > fromWallet.Balance)
-                return Result<TransferResponseDTO>.Error("Недостаточно средств");
+                return Result<TransferResponseDTO>.Error("Недостаточно средств", Result<TransferResponseDTO>.ErrorType.Validation);
 
             // http client
             var client = _factory.CreateClient();
@@ -84,7 +84,7 @@ namespace _transfer_service
             }
 
             if (ExchangeResponse.ConversionRates.Count == 0)
-                return Result<TransferResponseDTO>.Error("Ошибка валюты");
+                return Result<TransferResponseDTO>.Error("Ошибка валюты", Result<TransferResponseDTO>.ErrorType.Conflict);
 
             decimal fromWalletExchange = ExchangeResponse.ConversionRates[$"{fromWallet._Currency.ToString()}"];
             decimal toWalletExchange = ExchangeResponse.ConversionRates[$"{toWallet._Currency.ToString()}"];
