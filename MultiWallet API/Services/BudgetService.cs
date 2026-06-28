@@ -26,42 +26,34 @@ namespace _budget_service
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
-            try
-            {
-                var wallet = await _context.Wallets
-                    .FirstOrDefaultAsync(x => x.Id == WalletId);
+            var wallet = await _context.Wallets
+                   .FirstOrDefaultAsync(x => x.Id == WalletId);
 
-                if (wallet == null)
-                    return Result<BudgetResponseDTO>.Error("Счет не найден");
+            if (wallet == null)
+                return Result<BudgetResponseDTO>.Error("Счет не найден");
 
-                if (wallet.UserId != UserId)
-                    return Result<BudgetResponseDTO>.Error("Счет не принадлежит пользователю");
+            if (wallet.UserId != UserId)
+                return Result<BudgetResponseDTO>.Error("Счет не принадлежит пользователю");
 
-                if(CreationDTO.Amount > wallet.Balance)
-                    return Result<BudgetResponseDTO>.Error("Недостаточно средств");
+            if (CreationDTO.Amount > wallet.Balance)
+                return Result<BudgetResponseDTO>.Error("Недостаточно средств");
 
-                wallet.Balance -= CreationDTO.Amount;
+            wallet.Balance -= CreationDTO.Amount;
 
-                var _transaction = new Transaction(UserId, WalletId,
-                    CreationDTO.Amount, Transaction.TransactionType.Expense,
-                    CreationDTO.Description, (Category)CreationDTO.Category);
+            var _transaction = new Transaction(UserId, WalletId,
+                CreationDTO.Amount, Transaction.TransactionType.Expense,
+                CreationDTO.Description, (Category)CreationDTO.Category);
 
-                _context.Transactions.Add(_transaction);
+            _context.Transactions.Add(_transaction);
 
-                await _context.SaveChangesAsync();
-                await _context.Database.CommitTransactionAsync();
+            await _context.SaveChangesAsync();
+            await _context.Database.CommitTransactionAsync();
 
-                return Result<BudgetResponseDTO>.Success(new BudgetResponseDTO(
-                    CreationDTO.WalletId,
-                    ((Category)CreationDTO.Category).ToString(),
-                    CreationDTO.Amount
-                    ));
-            }
-            catch (Exception ex)
-            {
-                await _context.Database.RollbackTransactionAsync();
-                return Result<BudgetResponseDTO>.Error("Что-то пошло не так");
-            }
+            return Result<BudgetResponseDTO>.Success(new BudgetResponseDTO(
+                CreationDTO.WalletId,
+                ((Category)CreationDTO.Category).ToString(),
+                CreationDTO.Amount
+                ));
         }
 
         public async Task<Result<BudgetResponseDTO>> MakeIncome(Ulid UserId, BudgetCreationDTO CreationDTO)
@@ -71,39 +63,31 @@ namespace _budget_service
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
-            try
-            {
-                var wallet = await _context.Wallets
-                    .FirstOrDefaultAsync(x => x.Id == WalletId);
+            var wallet = await _context.Wallets
+                   .FirstOrDefaultAsync(x => x.Id == WalletId);
 
-                if (wallet == null)
-                    return Result<BudgetResponseDTO>.Error("Счет не найден");
+            if (wallet == null)
+                return Result<BudgetResponseDTO>.Error("Счет не найден");
 
-                if (wallet.UserId != UserId)
-                    return Result<BudgetResponseDTO>.Error("Счет не принадлежит пользователю");
+            if (wallet.UserId != UserId)
+                return Result<BudgetResponseDTO>.Error("Счет не принадлежит пользователю");
 
-                wallet.Balance += CreationDTO.Amount;
+            wallet.Balance += CreationDTO.Amount;
 
-                var _transaction = new Transaction(UserId, WalletId,
-                     CreationDTO.Amount, Transaction.TransactionType.Expense,
-                     CreationDTO.Description, (Category)CreationDTO.Category);
+            var _transaction = new Transaction(UserId, WalletId,
+                 CreationDTO.Amount, Transaction.TransactionType.Expense,
+                 CreationDTO.Description, (Category)CreationDTO.Category);
 
-                _context.Transactions.Add(_transaction);
+            _context.Transactions.Add(_transaction);
 
-                await _context.SaveChangesAsync();
-                await _context.Database.CommitTransactionAsync();
+            await _context.SaveChangesAsync();
+            await _context.Database.CommitTransactionAsync();
 
-                return Result<BudgetResponseDTO>.Success(new BudgetResponseDTO(
-                    CreationDTO.WalletId,
-                    ((Category)CreationDTO.Category).ToString(),
-                    CreationDTO.Amount
-                    ));
-            }
-            catch (Exception ex)
-            {
-                await _context.Database.RollbackTransactionAsync();
-                return Result<BudgetResponseDTO>.Error("Что-то пошло не так");
-            }
+            return Result<BudgetResponseDTO>.Success(new BudgetResponseDTO(
+                CreationDTO.WalletId,
+                ((Category)CreationDTO.Category).ToString(),
+                CreationDTO.Amount
+                ));
         }
     }
 }

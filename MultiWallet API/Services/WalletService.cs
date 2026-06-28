@@ -27,17 +27,10 @@ namespace _wallet_service
 
             var newWallet = new Wallet(walletCreationDTO.Name, UserId, (Wallet.Currency)walletCreationDTO.CurrencyEnum);
 
-            _context.Wallets.Add(newWallet); 
+            _context.Wallets.Add(newWallet);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Result<WalletResponseDTO>.Success(new WalletResponseDTO(newWallet));
-            }
-            catch (Exception ex)
-            {
-                return Result<WalletResponseDTO>.Error("Что-то пошло не так");
-            }
+            await _context.SaveChangesAsync();
+            return Result<WalletResponseDTO>.Success(new WalletResponseDTO(newWallet));
         }
         public async Task<Result<WalletResponseDTO>> RemoveWalletAsync(Ulid UserId, Ulid WalletId)
         {
@@ -54,15 +47,8 @@ namespace _wallet_service
 
             wallet.DeletedAt = DateTime.UtcNow;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Result<WalletResponseDTO>.Success(responseDTO);
-            }
-            catch (Exception ex)
-            {
-                return Result<WalletResponseDTO>.Error("Что-то пошло не так");
-            }
+            await _context.SaveChangesAsync();
+            return Result<WalletResponseDTO>.Success(responseDTO);
         }
         public async Task<Result<WalletResponseDTO>> ChangeWalletNameAsync(Ulid UserId, Ulid WalletId, string NewName)
         {
@@ -74,15 +60,8 @@ namespace _wallet_service
 
             wallet.Name = NewName;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Result<WalletResponseDTO>.Success(new WalletResponseDTO(wallet));
-            }
-            catch (Exception ex)
-            {
-                return Result<WalletResponseDTO>.Error("Что-то пошло не так");
-            }
+            await _context.SaveChangesAsync();
+            return Result<WalletResponseDTO>.Success(new WalletResponseDTO(wallet));
         }
         public async Task<Result<WalletResponseDTO>> ReplenishBalanceAsync(Ulid UserId, Ulid WalletId, decimal Amount) // пока так для примера, потом будет интеграция с ПС
         {
@@ -94,15 +73,8 @@ namespace _wallet_service
 
             wallet.Balance += Amount;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Result<WalletResponseDTO>.Success(new WalletResponseDTO(wallet));
-            }
-            catch (Exception ex)
-            {
-                return Result<WalletResponseDTO>.Error("Что-то пошло не так");
-            }
+            await _context.SaveChangesAsync();
+            return Result<WalletResponseDTO>.Success(new WalletResponseDTO(wallet));
         }
         public async Task<Result<List<WalletResponseDTO>>> GetAllAsync(Ulid UserId)
         {

@@ -91,15 +91,8 @@ namespace _auth_service
 
             string AccessToken = AppendCookiesAndGetAccessToken(user);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Result<UserLogInResponseDTO>.Success(new UserLogInResponseDTO(AccessToken, user));
-            }
-            catch (Exception ex)
-            {
-                return Result<UserLogInResponseDTO>.Error("Ошибка: что-то пошло не так");
-            }
+            await _context.SaveChangesAsync();
+            return Result<UserLogInResponseDTO>.Success(new UserLogInResponseDTO(AccessToken, user));
         }
 
         public async Task<Result<UserRegistrationResponseDTO>> RegistrAsync(UserRegistrationandLogInRequestDTO loginDTO) // registration
@@ -115,15 +108,9 @@ namespace _auth_service
             var user = new User(loginDTO.Login, hashedPassword);
 
             _context.Users.Add(user);
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Result<UserRegistrationResponseDTO>.Success(new UserRegistrationResponseDTO(true, user.Login));
-            }
-            catch (Exception ex)
-            {
-                return Result<UserRegistrationResponseDTO>.Error("Ошибка: что-то пошло не так");
-            }
+
+            await _context.SaveChangesAsync();
+            return Result<UserRegistrationResponseDTO>.Success(new UserRegistrationResponseDTO(true, user.Login));
         }
 
         public async Task<Result<UserLogInResponseDTO>> RefreshAsync() // refreshing refreshToken
@@ -149,15 +136,8 @@ namespace _auth_service
 
             string AccessToken = AppendCookiesAndGetAccessToken(user);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Result<UserLogInResponseDTO>.Success(new UserLogInResponseDTO(AccessToken, user));
-            }
-            catch (Exception ex)
-            {
-                return Result<UserLogInResponseDTO>.Error("Что-то пошло не так");
-            }
+            await _context.SaveChangesAsync();
+            return Result<UserLogInResponseDTO>.Success(new UserLogInResponseDTO(AccessToken, user));
         }
     }
 }
