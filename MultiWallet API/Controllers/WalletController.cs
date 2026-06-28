@@ -2,11 +2,14 @@
 using _interfaces;
 using _wallet_creation_dto;
 using Microsoft.AspNetCore.Mvc;
+using _patch_wallet_dto;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 namespace _interfaces
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class WalletController : BaseController
     {
         private readonly IWalletService _service;
@@ -15,8 +18,7 @@ namespace _interfaces
             _service = service;
         }
 
-        [HttpPut]
-        [Route("create-wallet")]
+        [HttpPost]
         public async Task<IActionResult> AddWalletAsync([FromBody] WalletCreationDTO DTO)
         {
             var userId = GetUserId();
@@ -25,7 +27,6 @@ namespace _interfaces
         }
 
         [HttpDelete]
-        [Route("remove-wallet")]
         public async Task<IActionResult> RemoveWalletAsync([FromQuery] string walletIdStr)
         {
             var walletId = ConverStringToUlid(walletIdStr);
@@ -35,27 +36,26 @@ namespace _interfaces
         }
 
         [HttpPut]
-        [Route("change-wallet-name")]
-        public async Task<IActionResult> ChangeWalletNameAsync([FromQuery] string walletIdStr, [FromQuery] string newName)
+        [Route("update-name")]
+        public async Task<IActionResult> ChangeWalletNameAsync([FromQuery] string walletIdStr, [FromBody] WalletRenameDTO DTO)
         {
             var walletId = ConverStringToUlid(walletIdStr);
             var userId = GetUserId();
-            var rez = await _service.ChangeWalletNameAsync(userId, walletId, newName);
+            var rez = await _service.ChangeWalletNameAsync(userId, walletId, DTO.Name);
             return ProcessResult(rez);
         }
 
         [HttpPut]
-        [Route("replenish-wallet-balance")]
-        public async Task<IActionResult> ReplenishBalanceAsync([FromQuery] string walletIdStr, [FromQuery] decimal amount)
+        [Route("update-balance")]
+        public async Task<IActionResult> ReplenishBalanceAsync([FromQuery] string walletIdStr, [FromBody] WalletReplenishDTO DTO)
         {
             var walletId = ConverStringToUlid(walletIdStr);
             var userId = GetUserId();
-            var rez = await _service.ReplenishBalanceAsync(userId, walletId, amount);
+            var rez = await _service.ReplenishBalanceAsync(userId, walletId, DTO.Amount);
             return ProcessResult(rez);
         }
 
-        [HttpGet]
-        [Route("get-all")]
+        [HttpGet] 
         public async Task<IActionResult> GetAllWalletsByUserAsync()
         {
             var userId = GetUserId();

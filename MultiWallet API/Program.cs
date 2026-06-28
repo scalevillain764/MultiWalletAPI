@@ -36,7 +36,6 @@ namespace MultiWallet_API
             app.UseHttpsRedirection();
             app.UseRouting();
             
-
             // middleware
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseAuthentication();
