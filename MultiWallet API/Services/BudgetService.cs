@@ -75,7 +75,7 @@ namespace _budget_service
             wallet.Balance += CreationDTO.Amount;
 
             var _transaction = new Transaction(UserId, WalletId,
-                 CreationDTO.Amount, Transaction.TransactionType.Expense,
+                 CreationDTO.Amount, Transaction.TransactionType.Income,
                  CreationDTO.Description, (Category)CreationDTO.Category);
 
             _context.Transactions.Add(_transaction);

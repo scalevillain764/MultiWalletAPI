@@ -1,7 +1,8 @@
-﻿using _user;
-using _wallet;
+﻿using _category;
 using _interfaces;
-using _category;
+using _user;
+using _wallet;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace _transaction
 {
     public class Transaction : IEntity
@@ -16,6 +17,8 @@ namespace _transaction
         public decimal Amount { get; set; }
         public TransactionType Type { get; set; }
         public TransactionStatus Status { get; set; }
+
+        [Column(TypeName = "timestamp with time zone USING \"CreatedAt\"::timestamp with time zone")]
         public DateTime CreatedAt { get; set; }
         public string? Description { get; set; }
         public Category? Category { get; set; }

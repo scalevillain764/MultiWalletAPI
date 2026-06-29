@@ -1,6 +1,7 @@
 ﻿using _interfaces;
 using _user;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace _wallet
 {
     public class Wallet : IEntity
@@ -12,7 +13,11 @@ namespace _wallet
         public enum Currency { USD = 1, BYN = 2, RUB = 3, EUR = 4, CNY = 5 };
         public Currency _Currency { get; set; }
         public decimal Balance { get; set; }
+
+        [Column(TypeName = "timestamp with time zone USING \"CreatedAt\"::timestamp with time zone")]
         public DateTime CreatedAt { get; set; }
+
+        [Column(TypeName = "timestamp with time zone USING \"DeletedAt\"::timestamp with time zone")]
         public DateTime? DeletedAt { get; set; }
         public Wallet(string Name, Ulid UserId, Currency Currency)
         {

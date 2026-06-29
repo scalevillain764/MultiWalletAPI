@@ -6,6 +6,7 @@ using _wallet_service;
 using _interfaces;
 using _context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 namespace MultiWallet_API
 {
     public class Program
@@ -18,10 +19,12 @@ namespace MultiWallet_API
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITransferService, TransferService>();
             builder.Services.AddScoped<IBudgetService, BudgetService>();
-           
+
+            var connectionString = builder.Configuration.GetConnectionString("PostgresDB");
+
             builder.Services.AddDbContext<AppDbContext>(x =>
             {
-                x.UseSqlite("DataSource=MultiWalletDataBase.db");
+                x.UseNpgsql(connectionString);
             });
 
             builder.Services.AddHttpContextAccessor();
