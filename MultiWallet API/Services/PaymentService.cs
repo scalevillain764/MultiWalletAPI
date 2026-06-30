@@ -50,6 +50,8 @@ namespace _payment_service
                 Description = "Тестовый платеж в C#"
             };
 
+            _context.Transactions.Add(newTransaction);
+
             try
             {   // уникальный ключ идемпотентности
                 string idempotenceKey = Guid.NewGuid().ToString();
@@ -57,10 +59,10 @@ namespace _payment_service
                 // отправка запроса
                 Payment payment = await asyncClient.CreatePaymentAsync(newPayment, idempotenceKey);
 
-               /*Console.WriteLine($"Платеж создан. ID: {payment.Id}");
-                Console.WriteLine($"Статус платежа: {payment.Status}");*/
-
                 string paymentUrl = payment.Confirmation.ConfirmationUrl;
+                newTransaction.ProviderPaymentId = payment.Id;
+
+                await _context.SaveChangesAsync();
                 return Result<string>.Success(paymentUrl);
             }
             catch (Exception ex)
@@ -69,5 +71,7 @@ namespace _payment_service
                 return Result<string>.Error("Что-то пошло не так", Result<string>.ErrorType.Conflict); // ?
             }
         }
+
+        public async Task PaymentProcess()
     }
 }
