@@ -6,7 +6,9 @@ using _result;
 using _transaction;
 using _user;
 using _wallet;
+using _yoo_cass_dto;
 using Microsoft.EntityFrameworkCore;
+using System.Net.NetworkInformation;
 using Yandex;
 using Yandex.Checkout.V3;
 namespace _payment_service
@@ -24,12 +26,14 @@ namespace _payment_service
             if (!Ulid.TryParse(DTO.WalletId, out var WalletId))
                 return Result<string>.Error("Неверный номер счета", Result<string>.ErrorType.Validation);
 
-            var wallet = await _context.Wallets
-                   .Where(x => (int)x._Currency == DTO.Currency)
+            var wallet = await _context.Wallets              
                    .FirstOrDefaultAsync(x => x.Id == WalletId);
 
             if (wallet == null)
                 return Result<string>.Error("Счет не найден", Result<string>.ErrorType.NotFound);
+
+            if ((int)wallet._Currency != DTO.Currency)
+                return Result<string>.Error("Неверная валюта", Result<string>.ErrorType.Validation);
 
             if (wallet.UserId != UserId)
                 return Result<string>.Error("Счет не принадлежит пользователю", Result<string>.ErrorType.NotFound);
@@ -44,14 +48,13 @@ namespace _payment_service
 
             var newPayment = new Payment
             {
-                Amount = new Amount { Value = DTO.Amount, Currency =  wallet._Currency.ToString() },
+                Amount = new Yandex.Checkout.V3.Amount { Value = DTO.Amount, Currency =  wallet._Currency.ToString() },
                 Capture = true,
                 Confirmation = new Confirmation { Type = ConfirmationType.Redirect, ReturnUrl = _configuration["ReturnURL"]},
                 Description = "Тестовый платеж в C#"
             };
 
-            _context.Transactions.Add(newTransaction);
-
+                    
             try
             {   // уникальный ключ идемпотентности
                 string idempotenceKey = Guid.NewGuid().ToString();
@@ -59,7 +62,10 @@ namespace _payment_service
                 // отправка запроса
                 Payment payment = await asyncClient.CreatePaymentAsync(newPayment, idempotenceKey);
 
+                _context.Transactions.Add(newTransaction);
+
                 string paymentUrl = payment.Confirmation.ConfirmationUrl;
+
                 newTransaction.ProviderPaymentId = payment.Id;
 
                 await _context.SaveChangesAsync();
@@ -72,6 +78,28 @@ namespace _payment_service
             }
         }
 
-        public async Task PaymentProcess()
+        public async Task PaymentProcess(YooKassaDTO DTO)
+        {
+            var _transaction = await _context.Transactions
+                .Include(x => x.Wallet)
+                .FirstOrDefaultAsync(x => x.ProviderPaymentId == DTO.Object.PaymentId);
+
+            if (_transaction == null)
+                return;
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            if (_transaction.Status == Transaction.TransactionStatus.Completed)
+                return;
+
+            if (DTO.Object.Status != "succeeded")
+                return;
+
+            _transaction.Wallet.Balance += _transaction.Amount;
+            _transaction.Status = Transaction.TransactionStatus.Completed;
+
+            await _context.SaveChangesAsync();
+            await _context.Database.CommitTransactionAsync();
+        }
     }
 }

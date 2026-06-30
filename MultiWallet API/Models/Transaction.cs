@@ -12,8 +12,10 @@ namespace _transaction
         public Ulid Id { get; set; }
         public Ulid UserId { get; set; }
         public User User { get; set; } = null;
+
         public Ulid WalletId { get; set; }
         public Wallet Wallet { get; set; } = null;
+
         public decimal Amount { get; set; }
         public TransactionType Type { get; set; }
         public TransactionStatus Status { get; set; }
