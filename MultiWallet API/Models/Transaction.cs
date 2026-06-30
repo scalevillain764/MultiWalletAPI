@@ -22,6 +22,7 @@ namespace _transaction
         public DateTime CreatedAt { get; set; }
         public string? Description { get; set; }
         public Category? Category { get; set; }
+        public string? ProviderPaymentId { get; set; }
         public Transaction(Ulid userId, Ulid walletId, decimal amount, TransactionType type, string? description, Category? category)
         {
             Id = Ulid.NewUlid();
@@ -33,6 +34,7 @@ namespace _transaction
             CreatedAt = DateTime.UtcNow;
             Description = description;
             Category = category;
+            ProviderPaymentId = null;
         }
         private Transaction()
         {

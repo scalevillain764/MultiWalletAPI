@@ -21,6 +21,9 @@ using _transfer_creation_dto;
 using _budget_creation_dto;
 using _budget_response_dto;
 
+// Payment DTO
+using _payment_creation_dto;
+
 namespace _interfaces
 {
     public interface IEntity
@@ -54,5 +57,10 @@ namespace _interfaces
     {
         Task<Result<BudgetResponseDTO>> MakeExpenseAsync(Ulid UserId, BudgetCreationDTO expenseCreationDTO);
         Task<Result<BudgetResponseDTO>> MakeIncomeAsync(Ulid UserId, BudgetCreationDTO incomeCreationDTO);
+    }
+
+    public interface IPaymentService
+    {
+        Task<Result<string>> MakePayment(Ulid UserId, PaymentCreationDTO CreationDTO);
     }
 }
