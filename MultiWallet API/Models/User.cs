@@ -13,8 +13,8 @@ namespace _user
         public string PasswordHash { get; set; }
         public string? RefreshToken { get; set; }
         public List<Wallet> Wallets { get; set; } = new(); // np
-        public List<Transaction> Transactions { get; set; } = new();
-        public List<Transfer> Transfers { get; set; } = new();
+        public List<Transaction> Transactions { get; set; } = new(); // np
+        public List<Transfer> Transfers { get; set; } = new(); // np
 
         [Column(TypeName = "timestamp with time zone")]
         public DateTime? RefreshTokenExpiresAt { get; set; }

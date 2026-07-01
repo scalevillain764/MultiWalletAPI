@@ -51,7 +51,7 @@ namespace _payment_service
 
             var newPayment = new Payment
             {
-                Amount = new Yandex.Checkout.V3.Amount { Value = DTO.Amount, Currency = wallet._Currency.ToString() },
+                Amount = new Amount { Value = DTO.Amount, Currency = wallet._Currency.ToString() },
                 Capture = true,
                 Confirmation = new Confirmation { Type = ConfirmationType.Redirect, ReturnUrl = _configuration["ReturnURL"] },
                 Description = DTO.Description != null ? DTO.Description : "Описание отсутствует"

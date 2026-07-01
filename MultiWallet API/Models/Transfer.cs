@@ -23,6 +23,7 @@ namespace _transfer
         public Wallet.Currency SourceCurrency { get; set; }
         public Wallet.Currency DestinationCurrency { get; set; }
 
+
         [Column(TypeName = "timestamp with time zone")]
         public DateTime CreatedAt { get; set; }
 

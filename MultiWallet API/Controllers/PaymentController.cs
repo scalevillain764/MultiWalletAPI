@@ -13,10 +13,7 @@ namespace _payment_controller
     public class PaymentController : BaseController
     {
         private readonly IPaymentService _service;
-        public PaymentController(IPaymentService service)
-        {
-            _service = service;
-        }
+        public PaymentController(IPaymentService service) => _service = service;
 
         [HttpPost]
         public async Task<IActionResult> MakePaymentAsync([FromBody] PaymentCreationDTO DTO)

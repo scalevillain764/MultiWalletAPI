@@ -13,10 +13,7 @@ namespace _interfaces
     public class WalletController : BaseController
     {
         private readonly IWalletService _service;
-        public WalletController(IWalletService service)
-        {
-            _service = service;
-        }
+        public WalletController(IWalletService service) => _service = service;
 
         [HttpPost]
         public async Task<IActionResult> AddWalletAsync([FromBody] WalletCreationDTO DTO)

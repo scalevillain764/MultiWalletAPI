@@ -6,11 +6,15 @@ namespace _wallet
 {
     public class Wallet : IEntity
     {
-        public Ulid Id { get; set; }
-        public Ulid UserId { get; set; } 
-        public string Name { get; set; }
-        public User _User { get; set; } = null; // np
         public enum Currency { USD = 1, BYN = 2, RUB = 3, EUR = 4, CNY = 5 };
+
+        public Ulid Id { get; set; }
+
+        public Ulid UserId { get; set; }
+        public User _User { get; set; } = null; // np
+
+        public string Name { get; set; }
+
         public Currency _Currency { get; set; }
         public decimal Balance { get; set; }
 

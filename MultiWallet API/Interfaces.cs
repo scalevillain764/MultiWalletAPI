@@ -37,7 +37,6 @@ namespace _interfaces
         Task<Result<UserLogInResponseDTO>> LogInAsync(UserRegistrationandLogInRequestDTO loginDTO);
         Task<Result<UserRegistrationResponseDTO>> RegistrAsync(UserRegistrationandLogInRequestDTO loginDTO);
         Task<Result<UserLogInResponseDTO>> RefreshAsync();
-        // Remove account function!!!
     }
 
     public interface IWalletService

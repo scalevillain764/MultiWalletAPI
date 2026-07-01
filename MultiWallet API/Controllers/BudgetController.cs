@@ -12,10 +12,7 @@ namespace _budget_controller
     public class BudgetController : BaseController
     {
         private readonly IBudgetService _service;
-        public BudgetController(IBudgetService service)
-        {
-            _service = service;
-        }
+        public BudgetController(IBudgetService service) => _service = service;
 
         [HttpPost]
         [Route("expense")]

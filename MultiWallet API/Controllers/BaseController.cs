@@ -25,6 +25,6 @@ namespace _base_controller
             return Ok(rez.Data);
         }
         protected Ulid GetUserId() => (Ulid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ? userId : throw new UnauthorizedAccessException());
-        protected Ulid ConvertStringToUlid(string value) => (Ulid.TryParse(value, out var valueUlid) ? valueUlid : throw new Exception());
+        protected Ulid ConvertStringToUlid(string value) => (Ulid.TryParse(value, out var valueUlid) ? valueUlid : throw new FormatException());
     }
 }

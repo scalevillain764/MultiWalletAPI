@@ -11,11 +11,8 @@ namespace _transfer_controller
     public class TransferController : BaseController
     {
         private readonly ITransferService _service;
-        public TransferController(ITransferService service)
-        {
-            _service = service;
-        }
-        
+        public TransferController(ITransferService service) => _service = service;
+
         [HttpPost]      
         public async Task<IActionResult> MakeTransferAsync([FromBody] TransferCreationDTO transferCreationDTO)
         {

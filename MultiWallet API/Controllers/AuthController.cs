@@ -11,10 +11,7 @@ namespace _auth_controller
     public class AuthController : BaseController
     {
         private readonly IAuthService _service;
-        public AuthController(IAuthService service)
-        {
-            _service = service;
-        }
+        public AuthController(IAuthService service) => _service = service;
 
         [HttpPut]
         [Route("login")]

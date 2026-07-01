@@ -9,12 +9,16 @@ namespace _transaction
     {
         public enum TransactionType { Income = 1, Expense = 2, Transfer = 3, Deposit = 4 /*через ПС*/}
         public enum TransactionStatus { Pending = 1, Completed = 2, Failed = 3, Cancelled = 4} 
+
         public Ulid Id { get; set; }
+
         public Ulid UserId { get; set; }
         public User User { get; set; } = null;
 
         public Ulid WalletId { get; set; }
         public Wallet Wallet { get; set; } = null;
+
+        public string? ProviderPaymentId { get; set; }
 
         public decimal Amount { get; set; }
         public TransactionType Type { get; set; }
@@ -24,7 +28,6 @@ namespace _transaction
         public DateTime CreatedAt { get; set; }
         public string? Description { get; set; }
         public Category? Category { get; set; }
-        public string? ProviderPaymentId { get; set; }
         public Transaction(Ulid userId, Ulid walletId, decimal amount, TransactionType type, string? description, Category? category)
         {
             Id = Ulid.NewUlid();
@@ -38,8 +41,6 @@ namespace _transaction
             Category = category;
             ProviderPaymentId = null;
         }
-        private Transaction()
-        {
-        }
+        private Transaction() { }
     }
 }
