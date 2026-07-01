@@ -20,7 +20,7 @@ namespace _transaction
         public TransactionType Type { get; set; }
         public TransactionStatus Status { get; set; }
 
-        [Column(TypeName = "timestamp with time zone USING \"CreatedAt\"::timestamp with time zone")]
+        [Column(TypeName = "timestamp with time zone")]
         public DateTime CreatedAt { get; set; }
         public string? Description { get; set; }
         public Category? Category { get; set; }

@@ -16,10 +16,10 @@ namespace _user
         public List<Transaction> Transactions { get; set; } = new();
         public List<Transfer> Transfers { get; set; } = new();
 
-        [Column(TypeName = "timestamp with time zone USING \"RefreshTokenExpiresAt\"::timestamp with time zone")]
+        [Column(TypeName = "timestamp with time zone")]
         public DateTime? RefreshTokenExpiresAt { get; set; }
 
-        [Column(TypeName = "timestamp with time zone USING \"DeletedAt\"::timestamp with time zone")]
+        [Column(TypeName = "timestamp with time zone")]
         public DateTime? DeletedAt { get; set; }
         public User(string login, string passwordHash)
         {

@@ -36,7 +36,7 @@ namespace MultiWallet_API.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone USING \"CreatedAt\"::timestamp with time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -79,7 +79,7 @@ namespace MultiWallet_API.Migrations
                         .IsFixedLength();
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone USING \"CreatedAt\"::timestamp with time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("DestinationAmount")
                         .HasColumnType("numeric");
@@ -131,7 +131,7 @@ namespace MultiWallet_API.Migrations
                         .IsFixedLength();
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone USING \"DeletedAt\"::timestamp with time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -149,7 +149,7 @@ namespace MultiWallet_API.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("RefreshTokenExpiresAt")
-                        .HasColumnType("timestamp with time zone USING \"RefreshTokenExpiresAt\"::timestamp with time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -167,10 +167,10 @@ namespace MultiWallet_API.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone USING \"CreatedAt\"::timestamp with time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone USING \"DeletedAt\"::timestamp with time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()

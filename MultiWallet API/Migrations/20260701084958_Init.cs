@@ -15,13 +15,13 @@ namespace MultiWallet_API.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Login = table.Column<string>(type: "TEXT", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
-                    RefreshToken = table.Column<string>(type: "TEXT", nullable: true),
-                    RefreshTokenExpiresAt = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    Id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Login = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    RefreshToken = table.Column<string>(type: "text", nullable: true),
+                    RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,13 +32,13 @@ namespace MultiWallet_API.Migrations
                 name: "Wallets",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    _Currency = table.Column<int>(type: "INTEGER", nullable: false),
-                    Balance = table.Column<decimal>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    Id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    UserId = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    _Currency = table.Column<int>(type: "integer", nullable: false),
+                    Balance = table.Column<decimal>(type: "numeric", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -55,15 +55,16 @@ namespace MultiWallet_API.Migrations
                 name: "Transactions",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    WalletId = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    Amount = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    Category = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    UserId = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    WalletId = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Category = table.Column<int>(type: "integer", nullable: true),
+                    ProviderPaymentId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -86,16 +87,16 @@ namespace MultiWallet_API.Migrations
                 name: "Transfers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    SourceUserId = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    FromWalletId = table.Column<string>(type: "TEXT", fixedLength: true, maxLength: 26, nullable: false),
-                    ToWalletId = table.Column<string>(type: "TEXT", nullable: false),
-                    SourceAmount = table.Column<decimal>(type: "TEXT", nullable: false),
-                    DestinationAmount = table.Column<decimal>(type: "TEXT", nullable: false),
-                    ExchangeRate = table.Column<decimal>(type: "TEXT", nullable: false),
-                    SourceCurrency = table.Column<int>(type: "INTEGER", nullable: false),
-                    DestinationCurrency = table.Column<int>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    SourceUserId = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    FromWalletId = table.Column<string>(type: "character(26)", fixedLength: true, maxLength: 26, nullable: false),
+                    ToWalletId = table.Column<string>(type: "character(26)", nullable: false),
+                    SourceAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    DestinationAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    ExchangeRate = table.Column<decimal>(type: "numeric", nullable: false),
+                    SourceCurrency = table.Column<int>(type: "integer", nullable: false),
+                    DestinationCurrency = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
