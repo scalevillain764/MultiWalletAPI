@@ -6,7 +6,7 @@ using _result;
 using _transaction;
 using _user;
 using _wallet;
-using _yoo_cass_dto;
+using _yoo_kassa_dto;
 using Microsoft.EntityFrameworkCore;
 using System.Net.NetworkInformation;
 using Yandex;
@@ -21,7 +21,7 @@ namespace _payment_service
             _context = context;
             _configuration = configuration;
         }
-        public async Task<Result<string>> MakePayment(Ulid UserId, PaymentCreationDTO DTO)
+        public async Task<Result<string>> MakePaymentAsync(Ulid UserId, PaymentCreationDTO DTO)
         {
             if (!Ulid.TryParse(DTO.WalletId, out var WalletId))
                 return Result<string>.Error("Неверный номер счета", Result<string>.ErrorType.Validation);
@@ -78,7 +78,7 @@ namespace _payment_service
             }
         }
 
-        public async Task PaymentProcess(YooKassaDTO DTO)
+        public async Task PaymentProcessAsync(YooKassaDTO DTO)
         {
             var _transaction = await _context.Transactions
                 .Include(x => x.Wallet)
@@ -87,12 +87,23 @@ namespace _payment_service
             if (_transaction == null)
                 return;
 
+            string secretKey = _configuration["Ukassa_api_key"];
+            string shopId = _configuration["ShopId"];
+
+            var newClient = new Client(shopId, secretKey); // создаем клиента
+            AsyncClient asyncClient = newClient.MakeAsync(); // делаем клиента асинхронным
+
+            var payment = await asyncClient.GetPaymentAsync(_transaction.ProviderPaymentId);
+
+            if (payment == null)
+                return;
+
+            if (payment.Status != PaymentStatus.Succeeded)
+                return;
+
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             if (_transaction.Status == Transaction.TransactionStatus.Completed)
-                return;
-
-            if (DTO.Object.Status != "succeeded")
                 return;
 
             _transaction.Wallet.Balance += _transaction.Amount;

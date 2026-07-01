@@ -23,6 +23,7 @@ using _budget_response_dto;
 
 // Payment DTO
 using _payment_creation_dto;
+using _yoo_kassa_dto;
 
 namespace _interfaces
 {
@@ -61,6 +62,7 @@ namespace _interfaces
 
     public interface IPaymentService
     {
-        Task<Result<string>> MakePayment(Ulid UserId, PaymentCreationDTO CreationDTO);
+        Task<Result<string>> MakePaymentAsync(Ulid UserId, PaymentCreationDTO CreationDTO);
+        Task PaymentProcessAsync(YooKassaDTO DTO);
     }
 }
