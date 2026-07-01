@@ -12,9 +12,11 @@ namespace _wallet_service
     public class WalletService : IWalletService
     {
         private readonly AppDbContext _context;
-        public WalletService(AppDbContext context)
+        private readonly ILogger<WalletService> _logger;
+        public WalletService(AppDbContext context, ILogger<WalletService> logger)
         {
             _context = context;
+            _logger = logger;
         }
         public async Task<Result<WalletResponseDTO>> AddWalletAsync(Ulid UserId, WalletCreationDTO walletCreationDTO)
         {
@@ -30,6 +32,8 @@ namespace _wallet_service
             _context.Wallets.Add(newWallet);
 
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Wallet {newWallet.Id} created succesfully");
             return Result<WalletResponseDTO>.Success(new WalletResponseDTO(newWallet));
         }
         public async Task<Result<WalletResponseDTO>> RemoveWalletAsync(Ulid UserId, Ulid WalletId)
@@ -51,6 +55,8 @@ namespace _wallet_service
             wallet.DeletedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Wallet {responseDTO.Id} removed succesfully");
             return Result<WalletResponseDTO>.Success(responseDTO);
         }
         public async Task<Result<WalletResponseDTO>> ChangeWalletNameAsync(Ulid UserId, Ulid WalletId, string NewName)
@@ -65,22 +71,6 @@ namespace _wallet_service
                 return Result<WalletResponseDTO>.Error("Счет не принадлежит пользователю", Result<WalletResponseDTO>.ErrorType.Forbidden);
 
             wallet.Name = NewName;
-
-            await _context.SaveChangesAsync();
-            return Result<WalletResponseDTO>.Success(new WalletResponseDTO(wallet));
-        }
-        public async Task<Result<WalletResponseDTO>> ReplenishBalanceAsync(Ulid UserId, Ulid WalletId, decimal Amount) // пока так для примера, потом будет интеграция с ПС
-        {
-            var wallet = await _context.Wallets
-                .FirstOrDefaultAsync(x => x.Id == WalletId);
-
-            if (wallet == null)
-                return Result<WalletResponseDTO>.Error("Счет не найден", Result<WalletResponseDTO>.ErrorType.NotFound);
-
-            if (wallet.UserId != UserId)
-                return Result<WalletResponseDTO>.Error("Счет не принадлежит пользователю", Result<WalletResponseDTO>.ErrorType.Forbidden);
-
-            wallet.Balance += Amount;
 
             await _context.SaveChangesAsync();
             return Result<WalletResponseDTO>.Success(new WalletResponseDTO(wallet));

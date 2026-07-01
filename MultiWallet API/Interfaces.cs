@@ -45,7 +45,6 @@ namespace _interfaces
         Task<Result<WalletResponseDTO>> AddWalletAsync(Ulid UserId, WalletCreationDTO walletCreationDTO);
         Task<Result<WalletResponseDTO>> RemoveWalletAsync(Ulid UserId, Ulid WalletId);
         Task<Result<WalletResponseDTO>> ChangeWalletNameAsync(Ulid UserId, Ulid WalletId, string NewName);
-        Task<Result<WalletResponseDTO>> ReplenishBalanceAsync(Ulid UserId, Ulid WalletId, decimal Amount);
         Task<Result<List<WalletResponseDTO>>> GetAllAsync(Ulid UserId);
     }
 

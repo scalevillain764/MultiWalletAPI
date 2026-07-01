@@ -17,9 +17,12 @@ namespace _payment_service
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
-        public PaymentService(AppDbContext context, IConfiguration configuration) {
+        private readonly ILogger<PaymentService> _logger;
+        public PaymentService(AppDbContext context, IConfiguration configuration, ILogger<PaymentService> logger)
+        {
             _context = context;
             _configuration = configuration;
+            _logger = logger;
         }
         public async Task<Result<string>> MakePaymentAsync(Ulid UserId, PaymentCreationDTO DTO)
         {
@@ -48,13 +51,12 @@ namespace _payment_service
 
             var newPayment = new Payment
             {
-                Amount = new Yandex.Checkout.V3.Amount { Value = DTO.Amount, Currency =  wallet._Currency.ToString() },
+                Amount = new Yandex.Checkout.V3.Amount { Value = DTO.Amount, Currency = wallet._Currency.ToString() },
                 Capture = true,
-                Confirmation = new Confirmation { Type = ConfirmationType.Redirect, ReturnUrl = _configuration["ReturnURL"]},
-                Description = "Тестовый платеж в C#"
+                Confirmation = new Confirmation { Type = ConfirmationType.Redirect, ReturnUrl = _configuration["ReturnURL"] },
+                Description = DTO.Description != null ? DTO.Description : "Описание отсутствует"
             };
-
-                    
+           
             try
             {   // уникальный ключ идемпотентности
                 string idempotenceKey = Guid.NewGuid().ToString();
@@ -73,7 +75,7 @@ namespace _payment_service
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка при создании платежа: {ex.Message}");
+                _logger.LogError($"Creating payment error: {ex.Message}");
                 return Result<string>.Error("Что-то пошло не так", Result<string>.ErrorType.Conflict); // ?
             }
         }
@@ -111,6 +113,8 @@ namespace _payment_service
 
             await _context.SaveChangesAsync();
             await _context.Database.CommitTransactionAsync();
+
+            _logger.LogInformation($"Payment {payment.Id} created successfully");
         }
     }
 }

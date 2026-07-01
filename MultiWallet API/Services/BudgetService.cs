@@ -1,12 +1,12 @@
-﻿using _interfaces;
+﻿using _budget_creation_dto;
+using _budget_response_dto;
+using _category;
+using _context;
+using _interfaces;
 using _result;
 using _transaction;
-using _category;
+using _user;
 using _wallet;
-
-using _budget_response_dto;
-using _budget_creation_dto;
-using _context;
 using Microsoft.EntityFrameworkCore;
 
 namespace _budget_service
@@ -14,8 +14,10 @@ namespace _budget_service
     public class BudgetService : IBudgetService
     {
         private readonly AppDbContext _context;
-        public BudgetService(AppDbContext context)
+        private readonly ILogger<BudgetService> _logger;
+        public BudgetService(AppDbContext context, ILogger<BudgetService> logger)
         {
+            _logger = logger;
             _context = context;
         }
 
@@ -48,6 +50,8 @@ namespace _budget_service
 
             await _context.SaveChangesAsync();
             await _context.Database.CommitTransactionAsync();
+
+            _logger.LogInformation($"Expense (transaction {transaction.TransactionId.ToString()}) created from wallet {wallet.Id.ToString()}");
 
             return Result<BudgetResponseDTO>.Success(new BudgetResponseDTO(
                 CreationDTO.WalletId,
@@ -82,6 +86,8 @@ namespace _budget_service
 
             await _context.SaveChangesAsync();
             await _context.Database.CommitTransactionAsync();
+
+            _logger.LogInformation($"Income (transaction {transaction.TransactionId.ToString()}) created to wallet {wallet.Id.ToString()}");
 
             return Result<BudgetResponseDTO>.Success(new BudgetResponseDTO(
                 CreationDTO.WalletId,

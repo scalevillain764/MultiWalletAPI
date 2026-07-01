@@ -19,10 +19,14 @@ namespace _auth_service
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
-        public AuthService(IHttpContextAccessor httpContextAccessor, AppDbContext context)
+        private readonly ILogger<AuthService> _logger;
+        private readonly IConfiguration _configuration;
+        public AuthService(IHttpContextAccessor httpContextAccessor, AppDbContext context, ILogger<AuthService> logger, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
             _context = context;
+            _logger = logger;
+            _configuration = configuration;
         }
         private string AppendCookiesAndGetAccessToken(User user)
         {
@@ -61,7 +65,7 @@ namespace _auth_service
                 new Claim(ClaimTypes.Name, UserName)
             };
 
-            string decoded_key = "secret_key";
+            string decoded_key = _configuration["SecretKey"];
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(decoded_key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -92,6 +96,7 @@ namespace _auth_service
             string AccessToken = AppendCookiesAndGetAccessToken(user);
 
             await _context.SaveChangesAsync();
+            _logger.LogInformation($"User {user.Id.ToString()} logged in");
             return Result<UserLogInResponseDTO>.Success(new UserLogInResponseDTO(AccessToken, user));
         }
 
@@ -110,6 +115,8 @@ namespace _auth_service
             _context.Users.Add(user);
 
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"User {user.Id.ToString()} registred");
             return Result<UserRegistrationResponseDTO>.Success(new UserRegistrationResponseDTO(true, user.Login));
         }
 

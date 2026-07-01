@@ -17,11 +17,13 @@ namespace _transfer_service
         private readonly AppDbContext _context;
         private readonly IHttpClientFactory _factory;
         private readonly IConfiguration _configuration;
-        public TransferService(AppDbContext context, IHttpClientFactory factory, IConfiguration configuration)
+        private readonly ILogger<TransferService> _logger;
+        public TransferService(AppDbContext context, IHttpClientFactory factory, IConfiguration configuration, ILogger<TransferService> logger)
         {
             _configuration = configuration;
             _factory = factory;
-            _context = context; 
+            _context = context;
+            _logger = logger;
         }
 
         public async Task<Result<TransferResponseDTO>> MakeTransferAsync(Ulid UserId, TransferCreationDTO transferCreationDTO)
@@ -73,14 +75,14 @@ namespace _transfer_service
                     }
                     catch (OperationCanceledException oce)
                     {
-                        Console.WriteLine($"Ошибка парсинга: {oce.Message}");
+                        _logger.LogError($"Parse error: {oce.Message}");
                     }
                 }
 
             }
-            catch (HttpRequestException e) // потом поменять
+            catch (HttpRequestException ex) // потом поменять
             {
-                Console.WriteLine($"Ошибка сети при запросе: {e.Message}");
+                _logger.LogError($"Network error during creating request: {ex.Message}");
             }
 
             if (ExchangeResponse.ConversionRates.Count == 0)
@@ -112,6 +114,7 @@ namespace _transfer_service
             await _context.SaveChangesAsync();
             await _context.Database.CommitTransactionAsync();
 
+            _logger.LogInformation($"Transfer {newTransfer.Id.ToString()} created succesfully");
             return Result<TransferResponseDTO>.Success(new TransferResponseDTO(newTransfer));
         }
     }

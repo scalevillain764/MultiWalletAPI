@@ -20,6 +20,11 @@ namespace MultiWallet_API
             builder.Services.AddScoped<ITransferService, TransferService>();
             builder.Services.AddScoped<IBudgetService, BudgetService>();
 
+            // логгер
+            builder.Logging.ClearProviders(); 
+            builder.Logging.AddConsole();     
+
+
             var connectionString = builder.Configuration.GetConnectionString("PostgresDB");
 
             builder.Services.AddDbContext<AppDbContext>(x =>

@@ -45,16 +45,6 @@ namespace _interfaces
             return ProcessResult(rez);
         }
 
-        [HttpPut]
-        [Route("update-balance")]
-        public async Task<IActionResult> ReplenishBalanceAsync([FromQuery] string walletIdStr, [FromBody] WalletReplenishDTO DTO)
-        {
-            var walletId = ConvertStringToUlid(walletIdStr);
-            var userId = GetUserId();
-            var rez = await _service.ReplenishBalanceAsync(userId, walletId, DTO.Amount);
-            return ProcessResult(rez);
-        }
-
         [HttpGet] 
         public async Task<IActionResult> GetAllWalletsByUserAsync()
         {
